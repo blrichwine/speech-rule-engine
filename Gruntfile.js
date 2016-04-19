@@ -110,6 +110,11 @@ module.exports = function(grunt) {
     watch: {
       files: ['<%= jshint.files %>'],
       tasks: ['jshint']
+    },
+    'json-minify': {
+      build: {
+        files: 'src/mathmaps/**/*.json'
+      }
     }
   });
 
@@ -117,8 +122,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-gjslint');
   grunt.loadNpmTasks('grunt-closure-tools');
   //grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-json-minify');
 
   //grunt.registerTask('default', ['gjslint']);
   grunt.registerTask('default', ['closureCompiler']);
+  grunt.registerTask('default', ['json-minify']);
 
 };

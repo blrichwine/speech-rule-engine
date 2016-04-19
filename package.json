@@ -36,13 +36,19 @@
   "devDependencies": {
     "closure": ">=1.0.0",
     "closure-library": ">=1.43629075.2",
-    "closurecompiler": ">=1.5.0"
+    "closurecompiler": ">=1.5.0",
+    "grunt": "^1.0.1",
+    "grunt-closure-tools": "^0.9.9",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-gjslint": "^0.2.1"
   },
   "files": [
-      "index.js",
-      "LICENSE",
-      "README.md",
-      "lib/"
+    "index.js",
+    "LICENSE",
+    "README.md",
+    "lib/"
   ],
   "main": "index.js"
 }

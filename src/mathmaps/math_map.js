@@ -41,7 +41,7 @@ sre.MathMap = function() {
    * The compund store for symbol and function mappings.
    * @type {sre.MathCompoundStore}
    */
-  this.store = sre.MathCompoundStore.getInstance();
+  this.store = new sre.MathCompoundStore(); //.getInstance();
 
   this.retrieveMaps();
 

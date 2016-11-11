@@ -24,6 +24,7 @@ goog.provide('sre.BooleanTrieNode');
 goog.provide('sre.DynamicTrieNode');
 goog.provide('sre.QueryTrieNode');
 goog.provide('sre.RootTrieNode');
+goog.provide('sre.TextTrieNode');
 goog.provide('sre.TrieNodeFactory');
 
 goog.require('sre.AbstractTrieNode');
@@ -47,6 +48,8 @@ sre.TrieNodeFactory.getNode = function(kind, constraint, store) {
       return new sre.QueryTrieNode(constraint, store);
     case sre.TrieNode.Kind.BOOLEAN:
       return new sre.BooleanTrieNode(constraint, store);
+    case sre.TrieNode.Kind.TEXT:
+      return new sre.TextTrieNode(constraint, store);
     default:
       return null;
   }
@@ -146,3 +149,18 @@ sre.BooleanTrieNode = function(constraint, store) {
   this.kind = sre.TrieNode.Kind.BOOLEAN;
 };
 goog.inherits(sre.BooleanTrieNode, sre.StaticTrieNode);
+
+
+/**
+ * @constructor
+ * @extends {sre.StaticTrieNode}
+ * @param {string} constraint The constraint the node represents.
+ * @param {sre.SpeechRuleStore} store The rule store.
+ */
+sre.TextTrieNode = function(constraint, store) {
+  var test = function(node) { return node === constraint; };
+  sre.TextTrieNode.base(
+    this, 'constructor', constraint, test);
+  this.kind = sre.TrieNode.Kind.TEXT;
+};
+goog.inherits(sre.TextTrieNode, sre.StaticTrieNode);

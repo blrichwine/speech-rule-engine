@@ -54,8 +54,20 @@ sre.Trie.prototype.addRule = function(rule) {
   for (var i = 0, l = dynamicCstr.length; i < l; i++) {
     node = this.addNode_(node, dynamicCstr[i], sre.TrieNode.Kind.DYNAMIC);
   }
-  node = this.addNode_(node, rule.precondition.query, sre.TrieNode.Kind.QUERY);
   var booleans = rule.precondition.constraints;
+  console.log(rule.precondition.query === 'self::text()');
+  console.log(booleans.length === 1);
+  if (booleans.length) {
+    console.log(booleans[0].match(/^self::text\(\)\W=\W/));
+  }
+  if (rule.precondition.query === 'self::text()' && booleans.length === 1 &&
+      booleans[0].match(/^self::text\(\)\W=\W/)) {
+    node = this.addNode_(node, booleans[0].slice(16, -1),
+                         sre.TrieNode.Kind.TEXT);
+    node.setRule(rule);
+    return;
+  }
+  node = this.addNode_(node, rule.precondition.query, sre.TrieNode.Kind.QUERY);
   for (i = 0, l = booleans.length; i < l; i++) {
     node = this.addNode_(node, booleans[i], sre.TrieNode.Kind.BOOLEAN);
   }

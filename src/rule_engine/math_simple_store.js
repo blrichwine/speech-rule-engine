@@ -25,7 +25,6 @@
  */
 
 goog.provide('sre.MathCompoundStore');
-goog.provide('sre.MathSimpleStore');
 
 goog.require('sre.BaseUtil');
 goog.require('sre.DomUtil');
@@ -37,14 +36,32 @@ goog.require('sre.XpathUtil');
 
 
 /**
- * A base store for simple Math objects.
+ * A compound store for simple Math objects.
  * @constructor
  * @extends {sre.MathStore}
  */
-sre.MathSimpleStore = function() {
-  sre.MathSimpleStore.base(this, 'constructor');
+sre.MathCompoundStore = function() {
+  sre.MathCompoundStore.base(this, 'constructor');
 };
-goog.inherits(sre.MathSimpleStore, sre.MathStore);
+goog.inherits(sre.MathCompoundStore, sre.MathStore);
+// goog.addSingletonGetter(sre.MathCompoundStore);
+
+
+/**
+ * @override
+ */
+sre.MathCompoundStore.prototype.addRule = function(rule) {
+  this.trie.addRule(rule);
+};
+
+
+/**
+ * @override
+ */
+sre.MathCompoundStore.prototype.initialize = function() {
+  if (this.initialized) return;
+  this.initialized = true;
+};
 
 
 /**
@@ -55,7 +72,7 @@ goog.inherits(sre.MathSimpleStore, sre.MathStore);
  * @param {Object.<string, Object.<string, string>>} mapping Simple string
  *     mapping.
  */
-sre.MathSimpleStore.prototype.defineRulesFromMappings = function(
+sre.MathCompoundStore.prototype.defineRulesFromMappings = function(
     name, str, mapping) {
   for (var domain in mapping) {
     for (var style in mapping[domain]) {
@@ -66,49 +83,14 @@ sre.MathSimpleStore.prototype.defineRulesFromMappings = function(
         cstr = 'self::text() = "' + str + '"';
       }
       this.defineRule(name, domain + '.' + style, '[t] "' + content + '"',
-                      cstr);
+                      'self::text()', cstr);
+      if (domain === 'default' && style === 'short') {
+        this.defineRule(name, 'mathspeak.default', '[t] "' + content + '"',
+                      'self::text()', cstr);
+      }
     }
   }
 };
-
-
-/**
- * @override
- */
-sre.MathSimpleStore.prototype.lookupRule = function(node, dynamic) {
-  if (!node || node.nodeType != sre.DomUtil.NodeType.TEXT_NODE) {
-    return null;
-  }
-  var rules = this.getSpeechRules().filter(
-      goog.bind(
-          function(rule) {
-            return this.testDynamicConstraints(dynamic, rule);
-            // At this point we can be sure that the rule matches.
-            // TODO (MOSS): Remove after Trie introduction.
-            // rule.precondition.constraints[0].slice(0,-1).slice(16);
-          },
-        this));
-  return rules.length ?
-    rules.sort(function(r1, r2) {
-      return sre.Engine.getInstance().comparator.
-        compare(r1.dynamicCstr, r2.dynamicCstr);})[0] : null;
-};
-
-
-
-/**
- * A compound store for simple Math objects.
- * @constructor
- */
-sre.MathCompoundStore = function() {
-  /**
-   * A set of efficient substores.
-   * @type {Object.<string, sre.MathStore>}
-   * @private
-   */
-  this.subStores_ = {};
-};
-goog.addSingletonGetter(sre.MathCompoundStore);
 
 
 /**
@@ -121,9 +103,23 @@ goog.addSingletonGetter(sre.MathCompoundStore);
  *     domains to strings, from which the speech rules will be computed.
  */
 sre.MathCompoundStore.prototype.defineRules = function(name, str, mappings) {
-  var store = new sre.MathSimpleStore();
-  store.defineRulesFromMappings(name, str, mappings);
-  this.subStores_[str] = store;
+  this.defineRulesFromMappings(name, str, mappings);
+};
+
+
+/**
+ * @override
+ */
+sre.MathCompoundStore.prototype.lookupRule = function(node, dynamic) {
+  if (!node || node.nodeType != sre.DomUtil.NodeType.TEXT_NODE) {
+    return null;
+  }
+  var rules = this.trie.lookupRules(node, dynamic);
+  // hh = rules.slice();
+  return rules.length ?
+    rules.sort(function(r1, r2) {
+      return sre.Engine.getInstance().comparator.
+        compare(r1.dynamicCstr, r2.dynamicCstr);})[0] : null;
 };
 
 
@@ -132,7 +128,7 @@ sre.MathCompoundStore.prototype.defineRules = function(name, str, mappings) {
  * @param {Object} json JSON object of the speech rules.
  */
 sre.MathCompoundStore.prototype.addSymbolRules = function(json) {
-  var key = sre.MathSimpleStore.parseUnicode_(json['key']);
+  var key = sre.MathCompoundStore.parseUnicode_(json['key']);
   this.defineRules(json['key'], key, json['mappings']);
 };
 
@@ -163,22 +159,22 @@ sre.MathCompoundStore.prototype.addUnitRules = function(json) {
 };
 
 
-/**
- * Retrieves a rule for the given node if one exists.
- * @param {Node} node A node.
- * @param {sre.DynamicCstr} dynamic Additional dynamic
- *     constraints. These are matched against properties of a rule.
- * @return {sre.SpeechRule} The speech rule if it exists.
- */
-sre.MathCompoundStore.prototype.lookupRule = function(node, dynamic) {
-  var store = this.subStores_[node.textContent];
-  if (store) {
-    // TODO: (MOSS) Fix with order parsing.
-    dynamic = dynamic || store.parser.parse('default.default');
-    return store.lookupRule(node, dynamic);
-  }
-  return null;
-};
+// /**
+//  * Retrieves a rule for the given node if one exists.
+//  * @param {Node} node A node.
+//  * @param {sre.DynamicCstr} dynamic Additional dynamic
+//  *     constraints. These are matched against properties of a rule.
+//  * @return {sre.SpeechRule} The speech rule if it exists.
+//  */
+// sre.MathCompoundStore.prototype.lookupRule = function(node, dynamic) {
+//   var store = this.subStores_[node.textContent];
+//   if (store) {
+//     // TODO: (MOSS) Fix with order parsing.
+//     dynamic = dynamic || store.parser.parse('default.default');
+//     return store.lookupRule(node, dynamic);
+//   }
+//   return null;
+// };
 
 
 /**
@@ -192,6 +188,7 @@ sre.MathCompoundStore.prototype.lookupString = function(text, dynamic) {
   var textNode = sre.XpathUtil.currentDocument ?
       sre.XpathUtil.currentDocument.createTextNode(text) :
       sre.DomUtil.createTextNode(text);
+  dynamic = dynamic || this.parser.parse('default.default');
   var rule = this.lookupRule(textNode, dynamic);
   if (!rule) {
     return '';
@@ -210,7 +207,7 @@ sre.MathCompoundStore.prototype.lookupString = function(text, dynamic) {
  * @return {string} The unicode character.
  * @private
  */
-sre.MathSimpleStore.parseUnicode_ = function(number) {
+sre.MathCompoundStore.parseUnicode_ = function(number) {
   var keyValue = parseInt(number, 16);
   if (keyValue < 0x10000) {
     return String.fromCharCode(keyValue);

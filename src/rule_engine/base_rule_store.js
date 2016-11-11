@@ -103,7 +103,7 @@ sre.BaseRuleStore.prototype.lookupRule = function(node, dynamic) {
     return null;
   }
   var matchingRules = this.trie.lookupRules(node, dynamic);
-  return (matchingRules.length > 0) ?
+  return matchingRules.length ?
       this.pickMostConstraint_(dynamic, matchingRules) : null;
 };
 
@@ -266,7 +266,7 @@ sre.BaseRuleStore.prototype.applySelector = function(node, expr) {
  */
 sre.BaseRuleStore.prototype.applyQuery = function(node, expr) {
   var results = this.applySelector(node, expr);
-  if (results.length > 0) {
+  if (results.length) {
     return results[0];
   }
   return null;

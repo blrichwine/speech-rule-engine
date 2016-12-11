@@ -132,11 +132,17 @@ sre.SemanticTreeRules.initSemanticRules_ = function() {
           '(sepFunc:CTXFcontentIterator)',
       'self::relseq[@role="equality"]', 'count(./children/*)>2');
 
+  // defineRule(
+  //     'equality', 'default.default',
+  //     '[t] "equation"; [t] "left hand side"; [n] children/*[1];' +
+  //         '[p] (pause:200); [n] content/*[1] (pause:200);' +
+  //         '[t] "right hand side"; [n] children/*[2]',
+  //     'self::relseq[@role="equality"]', 'count(./children/*)=2');
+
   defineRule(
       'equality', 'default.default',
-      '[t] "equation"; [t] "left hand side"; [n] children/*[1];' +
-          '[p] (pause:200); [n] content/*[1] (pause:200);' +
-          '[t] "right hand side"; [n] children/*[2]',
+      '[n] children/*[1]; [p] (pause:200); [n] content/*[1] (pause:200);' +
+          '[n] children/*[2]',
       'self::relseq[@role="equality"]', 'count(./children/*)=2');
 
   defineRule(
@@ -170,10 +176,15 @@ sre.SemanticTreeRules.initSemanticRules_ = function() {
       'self::infixop[@role="addition"]', 'count(children/*)>2',
       'children/punctuation[@role="ellipsis"]');// Make that better!
 
+  // defineRule(
+  //     'multi-addition', 'default.default',
+  //     '[t] "sum with,"; [t] count(./children/*); [t] ", summands";' +
+  //         '[p] (pause:400); [m] ./children/* (sepFunc:CTXFcontentIterator)',
+  //     'self::infixop[@role="addition"]', 'count(./children/*)>2');
+
   defineRule(
       'multi-addition', 'default.default',
-      '[t] "sum with,"; [t] count(./children/*); [t] ", summands";' +
-          '[p] (pause:400); [m] ./children/* (sepFunc:CTXFcontentIterator)',
+      '[m] ./children/* (sepFunc:CTXFcontentIterator)',
       'self::infixop[@role="addition"]', 'count(./children/*)>2');
 
   // Prefix Operator
@@ -274,8 +285,8 @@ sre.SemanticTreeRules.initSemanticRules_ = function() {
   // Fences rules.
   defineRule(
       'fences-open-close', 'default.default',
-      '[p] (pause:100); [t] "open"; [n] children/*[1]; [p] (pause:200);' +
-      '[t] "close"',
+      '[p] (pause:100); [n] content/*[1]; ' +
+      '[n] children/*[1]; [n] content/*[2]; [p] (pause:100)',
       'self::fenced', '@role="leftright"');
 
   defineRule(
@@ -369,6 +380,9 @@ sre.SemanticTreeRules.initSemanticRules_ = function() {
   defineRuleAlias(
       'cases-cell', 'self::cell[@role="table"]');
 
+  defineRule(
+      'empty-cell', 'mathspeak.default',
+      '[t] "Blank"', 'self::cell', 'count(children/*)=0');
 
   // Rules for punctuated expressions.
   defineRule(

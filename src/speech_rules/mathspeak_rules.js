@@ -1245,7 +1245,7 @@ sre.MathspeakRules.initMathspeakRules_ = function() {
       'repeat-initial', 'mathspeak.brief', 'mathspeak.sbrief');
 
   defineRuleAlias(
-      'repeat-inital',
+      'repeat-initial',
       'self::cell', 'count(children/*)=0',
       '../../../parent::table[@role="inequality"]');
 

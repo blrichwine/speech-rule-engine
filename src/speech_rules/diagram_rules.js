@@ -49,8 +49,15 @@ sre.DiagramRules.defineRule_ = goog.bind(
     sre.DiagramRules.mathStore);
 
 
+/** @private */
+sre.DiagramRules.defineSpecialisedRule_ = goog.bind(
+    sre.DiagramRules.mathStore.defineSpecialisedRule,
+    sre.DiagramRules.mathStore);
+
+
 goog.scope(function() {
   var defineRule = sre.DiagramRules.defineRule_;
+  var defineSpecialisedRule = sre.DiagramRules.defineSpecialisedRule_;
 
   var addCQF = sre.DiagramRules.addCustomQuery_;
 
@@ -76,6 +83,12 @@ goog.scope(function() {
       'self::cell', 'count(children/*)=0',
       '../../../parent::table[@role="equality"]'
     );
+
+  defineSpecialisedRule(
+      'repeat-initial', 'mathspeak.default', 'mathspeak.brief');
+
+  defineSpecialisedRule(
+      'repeat-initial', 'mathspeak.brief', 'mathspeak.sbrief');
 
   };
 

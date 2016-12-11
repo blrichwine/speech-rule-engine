@@ -1116,10 +1116,6 @@ sre.MathspeakRules.initMathspeakRules_ = function() {
   defineRule(
       'empty-line', 'mathspeak.default',
       '[t] "Blank"', 'self::line', 'count(children/*)=0');
-  defineRule(
-      'empty-line-with-label', 'mathspeak.default',
-      '[t] "with Label"; [n] content/*[1]; [t] "EndLabel"(pause: 200); ' +
-      '[t] "Blank"', 'self::line', 'count(children/*)=0');
 
   // Enclose
   defineRule(
@@ -1232,6 +1228,22 @@ sre.MathspeakRules.initMathspeakRules_ = function() {
       'unit-divide', 'mathspeak.default',
       '[n] children/*[1]; [t] "per"; [n] children/*[2]',
       'self::fraction', '@role="unit"');
+
+
+  // DIAGRAM: For testing.
+    defineRule(
+      'repeat-initial', 'mathspeak.default',
+      '[t] "Thus"; [n] ../../../../children/*[1]/children/*[1]',
+      'self::cell', 'count(children/*)=0',
+      '../../../parent::table[@role="equality"]'
+    );
+
+  defineSpecialisedRule(
+      'repeat-initial', 'mathspeak.default', 'mathspeak.brief');
+
+  defineSpecialisedRule(
+      'repeat-initial', 'mathspeak.brief', 'mathspeak.sbrief');
+
 };
 
 

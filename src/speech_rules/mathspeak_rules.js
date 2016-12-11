@@ -1231,7 +1231,7 @@ sre.MathspeakRules.initMathspeakRules_ = function() {
 
 
   // DIAGRAM: For testing.
-    defineRule(
+  defineRule(
       'repeat-initial', 'mathspeak.default',
       '[t] "Thus"; [n] ../../../../children/*[1]/children/*[1]',
       'self::cell', 'count(children/*)=0',
@@ -1243,6 +1243,11 @@ sre.MathspeakRules.initMathspeakRules_ = function() {
 
   defineSpecialisedRule(
       'repeat-initial', 'mathspeak.brief', 'mathspeak.sbrief');
+
+  defineRuleAlias(
+      'repeat-inital',
+      'self::cell', 'count(children/*)=0',
+      '../../../parent::table[@role="inequality"]');
 
 };
 

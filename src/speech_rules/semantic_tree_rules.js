@@ -363,6 +363,12 @@ sre.SemanticTreeRules.initSemanticRules_ = function() {
       'self::multiline');
 
   defineRule(
+      'multiline-ineq', 'default.default',
+      '[t] "multiline inequality";' +
+      '[m] children/* (ctxtFunc:CTXFnodeCounter,context:"row",pause:100)',
+      'self::multiline', '@role="inequality"');
+
+  defineRule(
       'line', 'default.default',
       '[m] children/*', 'self::line');
 
@@ -372,6 +378,12 @@ sre.SemanticTreeRules.initSemanticRules_ = function() {
       '[t] "multiline equation";' +
       '[m] children/* (ctxtFunc:CTXFnodeCounter,context:"row",pause:200)',
       'self::table');
+
+  defineRule(
+      'table-ineq', 'default.default',
+      '[t] "multiline inequality";' +
+      '[m] children/* (ctxtFunc:CTXFnodeCounter,context:"row",pause:200)',
+      'self::table', '@role="inequality"');
 
   defineRule(
       'table-row', 'default.default',
